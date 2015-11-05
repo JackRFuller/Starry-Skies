@@ -26,8 +26,9 @@ public class StarBaseClass : MonoBehaviour {
 
     public void Move()
     {
-		Vector3 _movementDirection = imScript.movementDirection * speed;
-		DebugText.text = _movementDirection.ToString();
+        Vector3 _movementDirection = imScript.movementDirection;
+        _movementDirection.y = transform.position.y;
+        _movementDirection *= speed * Time.deltaTime;
         starRB.AddForce(_movementDirection, ForceMode.Force);
     }
 }

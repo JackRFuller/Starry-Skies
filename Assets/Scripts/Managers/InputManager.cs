@@ -16,12 +16,19 @@ public class InputManager : MonoBehaviour {
 
     [Header("Input Values")]
 	public Vector3 movementDirection;
+    private float xAtStart = 0;
+    private float yAtStart = 0;
+    private float zAtStart = 0;
 
-	private bool hasInt;
-	private Vector3 startDirection;
+    private Vector3 lastPosition;
+	
 
 	// Use this for initialization
 	void Start () {
+
+        xAtStart = Input.acceleration.x;
+        yAtStart = Input.acceleration.y;
+        zAtStart = Input.acceleration.z;
 	
 	}
 	
@@ -41,33 +48,33 @@ public class InputManager : MonoBehaviour {
 
     void MobileInput()
     {
-		if(!hasInt)
-		{
-			startDirection.x = Input.acceleration.y;
-			startDirection.y = Input.acceleration.x;
-			if(startDirection.sqrMagnitude > 1)
-			{
-				startDirection.Normalize();
-			}
-			hasInt = true;
-		}
+        Vector3 _direction = Vector3.zero;
 
-		//Remap Device Orientation Axis to Game coordinates
-		movementDirection.x = -Input.acceleration.y - startDirection.x;
-		movementDirection.z = -Input.acceleration.x - startDirection.y;
+        //Remap the device acceleration axis to game coordinates
+        //  1) XY plane of the device is mapped onto XZ plane
+        //  2) rotated 90 degrees around Y axis
 
-		//Clamp Acceleration
-		if(movementDirection > 1)
-		{
-			movementDirection.Normalize();
-		}
+        _direction.x = (Input.acceleration.x - xAtStart);
+        _direction.z = (Input.acceleration.z - zAtStart);
 
-		Direction.text = movementDirection.ToString();
+        //Clamp Acceleration to the unit sphere
+        if (_direction.sqrMagnitude > 1)
+            _direction.Normalize();
+
+        movementDirection = _direction;
+
+        Direction.text = movementDirection.ToString();
     }
 
     void KeyboardInput()
     {
-		movementDirection = new Vector3(Input.GetAxis("Horizontal"),0,Input.GetAxis("Vertical"));   
-		Direction.text = movementDirection.ToString();
+
+        if (Input.GetMouseButton(0))
+        {
+            Vector3 target = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            movementDirection = target;
+        }
+		//movementDirection = new Vector3(Input.GetAxis("Horizontal"),0,Input.GetAxis("Vertical"));   
+		//Direction.text = movementDirection.ToString();
     }
 }
