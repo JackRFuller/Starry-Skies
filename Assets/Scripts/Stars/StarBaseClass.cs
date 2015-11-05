@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 [System.Serializable]
 public class StarBaseClass : MonoBehaviour {
@@ -9,6 +10,8 @@ public class StarBaseClass : MonoBehaviour {
 
     public Rigidbody starRB;
     public float speed;
+
+	public Text DebugText;
     
 
 	// Use this for initialization
@@ -23,7 +26,8 @@ public class StarBaseClass : MonoBehaviour {
 
     public void Move()
     {
-        Vector3 _movementDirection = new Vector3(imScript.horizontalAxis * speed, 0, imScript.verticalAxis * speed);
+		Vector3 _movementDirection = imScript.movementDirection * speed;
+		DebugText.text = _movementDirection.ToString();
         starRB.AddForce(_movementDirection, ForceMode.Force);
     }
 }
