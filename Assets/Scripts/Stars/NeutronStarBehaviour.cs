@@ -7,11 +7,14 @@ public class NeutronStarBehaviour : StarBaseClass {
 	[SerializeField] private float criticalMassLimit;
 	[SerializeField] private float[] addedMasses = new float[5];
 	[SerializeField] private float secondsBeforeExplosion;
+	private Animator neutronStarAnimator;
 
 	// Use this for initialization
 	void Start () {
 
 		InitialValues();
+
+		neutronStarAnimator = this.GetComponent<Animator>();
 	
 	}
 	
@@ -24,6 +27,10 @@ public class NeutronStarBehaviour : StarBaseClass {
 
 	IEnumerator StartExplosion()
 	{
+		starRB.velocity = Vector3.zero;
+		starRB.isKinematic = true;
+
+		neutronStarAnimator.enabled = true;
 		yield return new WaitForSeconds(secondsBeforeExplosion);
 		Explode();
 	}
