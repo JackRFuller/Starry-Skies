@@ -4,77 +4,41 @@ using UnityEngine.UI;
 
 public class InputManager : MonoBehaviour {
 
-	public enum controlType
-	{
-		Keyboard,
-		Mobile,
-	}
-
-	public controlType currentControlType;
-
-	[SerializeField] private Text Direction;
-
     [Header("Input Values")]
 	public Vector3 movementDirection;
-    private float xAtStart = 0;
-    private float yAtStart = 0;
-    private float zAtStart = 0;
-
     private Vector3 lastPosition;
 	
 
 	// Use this for initialization
 	void Start () {
 
-        xAtStart = Input.acceleration.x;
-        yAtStart = Input.acceleration.y;
-        zAtStart = Input.acceleration.z;
 	
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
-		switch(currentControlType)
+		if(Input.GetMouseButton(0))
 		{
-		case(controlType.Keyboard):
-			KeyboardInput();
-			break;
-		case(controlType.Mobile):
-			MobileInput();
-			break;
+			PlayerInput();
 		}
+
     }
-
-    void MobileInput()
+    
+    void PlayerInput()
     {
-        Vector3 _direction = Vector3.zero;
+//	    Vector3 target = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+//	    movementDirection = target;
 
-        //Remap the device acceleration axis to game coordinates
-        //  1) XY plane of the device is mapped onto XZ plane
-        //  2) rotated 90 degrees around Y axis
+		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+		RaycastHit hit;
 
-        _direction.x = (Input.acceleration.x - xAtStart);
-        _direction.z = (Input.acceleration.z - zAtStart);
-
-        //Clamp Acceleration to the unit sphere
-        if (_direction.sqrMagnitude > 1)
-            _direction.Normalize();
-
-        movementDirection = _direction;
-
-        Direction.text = movementDirection.ToString();
-    }
-
-    void KeyboardInput()
-    {
-
-        if (Input.GetMouseButton(0))
-        {
-            Vector3 target = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            movementDirection = target;
-        }
-		//movementDirection = new Vector3(Input.GetAxis("Horizontal"),0,Input.GetAxis("Vertical"));   
-		//Direction.text = movementDirection.ToString();
+		if(Physics.Raycast(ray, out hit, Mathf.Infinity))
+		{
+			if(hit.collider.tag == "Terrain")
+			{
+				movementDirection = hit.point;
+			}
+		}
     }
 }
