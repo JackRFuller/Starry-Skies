@@ -4,6 +4,9 @@ using UnityEngine.UI;
 
 public class StarHolder : MonoBehaviour {
 
+    [Header("Manager")]
+    [SerializeField] private LevelManager lmScript;
+
     [SerializeField] private Animation starAnimations;
     [SerializeField] private Animator showText;
     [SerializeField] private string starName;
@@ -25,6 +28,7 @@ public class StarHolder : MonoBehaviour {
         {
             GetComponent<Collider>().enabled = false;
             starAnimations.Play("InPlace");
+            lmScript.StarHolderActive();
             if (starNameText)
             {
                 StartCoroutine(ShowStarName());

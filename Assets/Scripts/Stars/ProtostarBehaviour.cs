@@ -23,10 +23,11 @@ public class ProtostarBehaviour : StarBaseClass {
 	void TransformIntoSequence()
 	{
 		GameObject newStar = Instantiate(SequenceStar,transform.position,transform.rotation) as GameObject;
+        
 		SequenceStarBehaviour ssScript = newStar.GetComponent<SequenceStarBehaviour>();
 		ssScript.spawnedFromProtoStar = true;
 
-		newStar.GetComponent<Rigidbody>().velocity = starRB.velocity;
+		newStar.GetComponent<Rigidbody>().velocity = starRB.velocity;       
 		gameObject.SetActive(false);
 	}
 

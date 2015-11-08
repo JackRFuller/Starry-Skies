@@ -5,15 +5,28 @@ public class LevelManager : MonoBehaviour {
 
     [Header("Manager")]
     [SerializeField] private UIManager uiScript;
+    [SerializeField] private ConstellationBehaviour cbScript;
 
-    [Header("Timer")]
-    [SerializeField] private float totalTime;
+    public enum levelState
+    {
+        Initialise,
+        InProgress,
+        Finished,
+    }
+    public levelState currentLevelState = levelState.Initialise;
 
-    [Header("Gameplay")]
-    [SerializeField] private bool isPlaying;
+    [Header("Level Specifics")]
+    public string levelName;    
+    public GameObject[] stars;
+    public GameObject[] starHolders;
+    private int activeStarHolders = 0;
+    public float totalTime;
+    [SerializeField] private int numOfSequenceStars;
+    public int[] scoreTiers = new int[3];
 
-	// Use this for initialization
-	void Start () {
+
+    // Use this for initialization
+    void Start () {
 
         InitialValues();
 	
@@ -22,25 +35,72 @@ public class LevelManager : MonoBehaviour {
     void InitialValues()
     {
         uiScript = GameObject.Find("UIManager").GetComponent<UIManager>();
-        uiScript.totalTime = totalTime;
+        uiScript.InitiliaseLevelUI(this.GetComponent<LevelManager>());
+
+        cbScript = transform.GetChild(0).GetComponent<ConstellationBehaviour>();
+
+        foreach(GameObject star in stars)
+        {
+            star.GetComponent<StarBaseClass>().FreezePosition();
+            if(star.tag == "SequenceStar")
+            {
+                numOfSequenceStars += 1;
+            }
+        }
+
+        starHolders = GameObject.FindGameObjectsWithTag("StarHolder");
+
+    }
+
+    public void StartLevel()
+    {
+        currentLevelState = levelState.InProgress;
+        foreach(GameObject star in stars)
+        {
+            star.GetComponent<StarBaseClass>().UnFreezePosition();
+        }
     }
 	
 	// Update is called once per frame
 	void Update () {
 
-        if (isPlaying)
+        if(currentLevelState == levelState.InProgress)
         {
             RunTimer();
         }
-	
 	}
+
+    public void StarHolderActive()
+    {
+        activeStarHolders += 1;
+
+        if(activeStarHolders == starHolders.Length)
+        {
+            currentLevelState = levelState.Finished;
+            cbScript.ChooseLineToDraw();           
+        }
+    }
+
+    public void LevelComplete()
+    {
+        
+        foreach(GameObject star in stars)
+        {
+           if(star.tag != "SequenceStar")
+            {
+                star.SetActive(false);
+            }
+        }
+
+        StartCoroutine(uiScript.ResultsScreenIn());
+    }
 
     void RunTimer()
     {
         if(totalTime > 0)
         {
             totalTime -= Time.deltaTime;
-            string _formattedTime = totalTime.ToString("F0");
+            string _formattedTime = totalTime.ToString("F0");            
             uiScript.Timer(_formattedTime);
         }
        

@@ -4,6 +4,9 @@ using UnityEngine.UI;
 
 public class InputManager : MonoBehaviour {
 
+    [Header("Managers")]
+    [SerializeField] private UIManager uiScript;
+
     [Header("Input Values")]
 	public Vector3 movementDirection;
     private Vector3 lastPosition;
@@ -18,11 +21,13 @@ public class InputManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		if(Input.GetMouseButton(0))
-		{
-			PlayerInput();
-		}
-
+        if (uiScript.hasStarted)
+        {
+            if (Input.GetMouseButton(0))
+            {
+                PlayerInput();
+            }
+        }
     }
     
     void PlayerInput()

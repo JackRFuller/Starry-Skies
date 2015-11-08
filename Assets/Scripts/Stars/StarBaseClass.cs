@@ -7,6 +7,7 @@ public class StarBaseClass : MonoBehaviour {
 
     [Header("Managers")]
     public InputManager imScript;
+    public LevelManager lm_Script;
 
 	[Header("Movement")]
     public Rigidbody starRB;
@@ -31,10 +32,21 @@ public class StarBaseClass : MonoBehaviour {
     public void InitialValues()
     {
         imScript = GameObject.Find("InputManager").GetComponent<InputManager>();
+        lm_Script = GameObject.Find("LevelManager").GetComponent<LevelManager>();
 		starRB.velocity = Vector3.zero;
 
 		//Screenwrapping
 		InitialiseScreenWrapping();
+    }
+
+    public void FreezePosition()
+    {
+        starRB.isKinematic = true;
+    }
+
+    public void UnFreezePosition()
+    {
+        starRB.isKinematic = false;
     }
 
 	void InitialiseScreenWrapping()
@@ -50,15 +62,24 @@ public class StarBaseClass : MonoBehaviour {
 
     public void Move()
     {
-        Vector3 _movementDirection = imScript.movementDirection;
-		_movementDirection.y = transform.position.y;
+        if(lm_Script.currentLevelState == LevelManager.levelState.InProgress)
+        {
+            Vector3 _movementDirection = imScript.movementDirection;
 
-		Vector3 _heading = (_movementDirection - transform.position);
-		_heading *= (speed * Time.deltaTime);       
+            if(_movementDirection != Vector3.zero)
+            {
+                _movementDirection.y = transform.position.y;
 
-		starRB.AddForce(_heading, ForceMode.Force);
+                Vector3 _heading = (_movementDirection - transform.position);
+                _heading *= (speed * Time.deltaTime);
 
-		ScreenWrap();
+                starRB.AddForce(_heading, ForceMode.Force);
+
+                ScreenWrap();
+            }
+           
+        }
+       
     }
 
 	private void ScreenWrap()
