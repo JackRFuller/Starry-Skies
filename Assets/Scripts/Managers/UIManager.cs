@@ -6,6 +6,8 @@ public class UIManager : MonoBehaviour {
 
     [Header("Managers")]
     public LevelManager lmScript;
+	private ConstellationBehaviour cbScript;
+
 
     [Header("Initial Level Screen")]
     [SerializeField] private Image overlayImage;
@@ -14,12 +16,6 @@ public class UIManager : MonoBehaviour {
     [SerializeField] private GameObject playButton;
     public bool hasStarted;
 
-    [Header("Timer")]
-    [SerializeField] private Image timerImage;
-    [SerializeField] private Animation timerAnimation;
-    [SerializeField] private Text timerText;
-    public float totalTime;
-
     [Header("Timer Lerping Variables")]
     [SerializeField] private float timeTakenDuringLerping;
     private bool isLerping;
@@ -27,6 +23,9 @@ public class UIManager : MonoBehaviour {
     private float timerStartPosition;
     private float endPosition;
     private float timeStartedLerping;
+	private Image timerImage;
+	public int numOfTimers;
+	public int timerID;
 
     [Header("Stars")]
     [SerializeField] private Image[] stars;
@@ -41,6 +40,7 @@ public class UIManager : MonoBehaviour {
     public void InitiliaseLevelUI(LevelManager _lmScript)
     {
         lmScript = _lmScript;
+		cbScript = _lmScript.transform.GetChild(0).GetComponent<ConstellationBehaviour>();
 
         int _starCount = 0;
         foreach(Image star in stars)
@@ -53,6 +53,7 @@ public class UIManager : MonoBehaviour {
         overlayImage.enabled = true;
         levelTitleText.text = _lmScript.levelName;
         levelStartUI.Play("MainButtonIn");
+
     }
 	
 	// Update is called once per frame
@@ -69,15 +70,21 @@ public class UIManager : MonoBehaviour {
 
             timerImage.fillAmount = Mathf.Lerp(startPosition, endPosition, percentageComplete);
             float _timerText = Mathf.Lerp(timerStartPosition, endPosition, percentageComplete);
-            timerText.text = _timerText.ToString("F0");
+            //timerText.text = _timerText.ToString("F0");
 
             if(percentageComplete >= 1.0F)
             {
                 isLerping = false;
                 timerStartPosition = Mathf.RoundToInt(timerStartPosition);
-                timerText.text = (timerStartPosition * 100).ToString("F0");
 
-                StartCoroutine(DetermineStarScore());
+				if(timerID < numOfTimers)
+				{
+					cbScript.SendTimerToDepelete(timerID);
+				}
+				else
+				{
+					Debug.Log("Game Finished");
+				}                
             }
         }
     }
@@ -89,32 +96,28 @@ public class UIManager : MonoBehaviour {
 
         lmScript.StartLevel();
         hasStarted = true;
+		numOfTimers = lmScript.starHolders.Length;
     }
 
-    public IEnumerator ResultsScreenIn()
-    {
-        levelStartUI.Play("ResultsIn");
-        yield return new WaitForSeconds(levelStartUI.GetClip("ResultsIn").length);
-        timerAnimation.Play();
-        yield return new WaitForSeconds(timerAnimation.GetClip("TimerToCentre").length);
-        DepeleteTimer();
-    }
+	public void ShowResults()
+	{
+		levelStartUI.Play("ResultsIn");
+	}
+   
+	public void SetTimerToDepelete(Image _depeletingTimer, int timer)
+	{
+		timerID = timer;
 
-    public void Timer(string _time)
-    {
-        timerText.text = _time;        
-        timerImage.fillAmount  -= 0.01F * Time.deltaTime;
-    }
+		timerImage = _depeletingTimer;
+		isLerping = true;
+		timeStartedLerping = Time.time;
+		
+		startPosition = timerImage.fillAmount;
+		timerStartPosition = lmScript.totalTime;
+		endPosition = 0;
 
-    void DepeleteTimer()
-    {
-        isLerping = true;
-        timeStartedLerping = Time.time;
-
-        startPosition = timerImage.fillAmount;
-        timerStartPosition = lmScript.totalTime;
-        endPosition = 0;
-    }
+		timerID++;
+	}
 
     IEnumerator DetermineStarScore()
     {

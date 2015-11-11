@@ -64,10 +64,7 @@ public class LevelManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        if(currentLevelState == levelState.InProgress)
-        {
-            RunTimer();
-        }
+       
 	}
 
     public void StarHolderActive()
@@ -92,17 +89,6 @@ public class LevelManager : MonoBehaviour {
             }
         }
 
-        StartCoroutine(uiScript.ResultsScreenIn());
-    }
-
-    void RunTimer()
-    {
-        if(totalTime > 0)
-        {
-            totalTime -= Time.deltaTime;
-            string _formattedTime = totalTime.ToString("F0");            
-            uiScript.Timer(_formattedTime);
-        }
-       
+        
     }
 }

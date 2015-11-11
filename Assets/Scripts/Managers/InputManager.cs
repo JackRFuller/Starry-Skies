@@ -10,6 +10,7 @@ public class InputManager : MonoBehaviour {
     [Header("Input Values")]
 	public Vector3 movementDirection;
     private Vector3 lastPosition;
+	[SerializeField] private SpriteRenderer touchPoint;
 	
 
 	// Use this for initialization
@@ -27,6 +28,11 @@ public class InputManager : MonoBehaviour {
             {
                 PlayerInput();
             }
+			if(Input.GetMouseButtonUp(0))
+			{
+				touchPoint.enabled = false;
+				movementDirection = Vector3.zero;
+			}
         }
     }
     
@@ -38,11 +44,15 @@ public class InputManager : MonoBehaviour {
 		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 		RaycastHit hit;
 
+
+
 		if(Physics.Raycast(ray, out hit, Mathf.Infinity))
 		{
 			if(hit.collider.tag == "Terrain")
 			{
 				movementDirection = hit.point;
+				touchPoint.enabled = true;
+				touchPoint.transform.position = hit.point;
 			}
 		}
     }

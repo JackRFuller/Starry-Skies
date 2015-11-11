@@ -11,7 +11,10 @@ public class StarBaseClass : MonoBehaviour {
 
 	[Header("Movement")]
     public Rigidbody starRB;
-    public float speed;
+	public float coreSpeed;
+	public float dividedSpeed;
+	public float maxVelocity = 5;
+	public float distancePoint = 10;
 
 	[Header("Screen Wrapping")]
 	public bool wrapWidth;
@@ -69,11 +72,24 @@ public class StarBaseClass : MonoBehaviour {
             if(_movementDirection != Vector3.zero)
             {
                 _movementDirection.y = transform.position.y;
-
                 Vector3 _heading = (_movementDirection - transform.position);
-                _heading *= (speed * Time.deltaTime);
 
+				float _speed;
+
+				if(distance(_movementDirection) > distancePoint)
+				{
+					_speed = dividedSpeed;
+				}
+				else
+				{
+					_speed = coreSpeed;
+				}
+
+
+				_heading *= (_speed * Time.deltaTime);
                 starRB.AddForce(_heading, ForceMode.Force);
+
+				CapSpeed();
 
                 ScreenWrap();
             }
@@ -82,6 +98,28 @@ public class StarBaseClass : MonoBehaviour {
        
     }
 
+	void CapSpeed()
+	{
+		if(starRB.velocity.x >= maxVelocity)
+		{
+			starRB.velocity = new Vector3(maxVelocity,
+			                              0,
+			                              starRB.velocity.z);
+		}
+		if(starRB.velocity.z >= maxVelocity)
+		{
+			starRB.velocity = new Vector3(starRB.velocity.x,
+			                              0,
+			                              maxVelocity);
+		}
+	}
+
+	float distance(Vector3 movingDirection)
+	{
+		float _dist = Vector3.Distance(movingDirection, transform.position);
+		//Debug.Log(_dist + " " + gameObject.name);
+		return _dist;
+	}
 	private void ScreenWrap()
 	{
 		bool isVisible = isBeingRendered();

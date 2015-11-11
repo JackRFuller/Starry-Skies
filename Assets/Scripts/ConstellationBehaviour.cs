@@ -1,11 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class ConstellationBehaviour : MonoBehaviour {
 
     [Header("Managers")]
     private LevelManager LM_Script;
+	private UIManager uiScript;
 
     [Header("LineRenderers")]
     [SerializeField] private Transform[] starHolders;
@@ -21,6 +23,8 @@ public class ConstellationBehaviour : MonoBehaviour {
     private float distance;
     private bool drawing;
     public int lineID = 0;
+
+	private int timerToDepelete = 0;
     
 
 	// Use this for initialization
@@ -33,6 +37,7 @@ public class ConstellationBehaviour : MonoBehaviour {
     void Setup()
     {
         LM_Script = transform.parent.GetComponent<LevelManager>();
+		uiScript = GameObject.Find("UIManager").GetComponent<UIManager>();
 
         for(int i = 0; i < starHolders.Length; i++)
         {
@@ -76,11 +81,19 @@ public class ConstellationBehaviour : MonoBehaviour {
                     }
                     if(lineID == starHolders.Length - 1)
                     {
-                        LM_Script.LevelComplete();
+						SendTimerToDepelete(0);
                     }
                 }
             }
         }
+	}
+
+	public void SendTimerToDepelete(int _timerToDepelete)
+	{
+		Image _starTimer = starHolders[_timerToDepelete].GetChild(1).transform.GetChild(1).GetComponent<Image>();
+
+		uiScript.SetTimerToDepelete(_starTimer, _timerToDepelete);
+
 	}
 
     public void ChooseLineToDraw()
