@@ -8,7 +8,6 @@ public class UIManager : MonoBehaviour {
     public LevelManager lmScript;
 	private ConstellationBehaviour cbScript;
 
-
     [Header("Initial Level Screen")]
     [SerializeField] private Image overlayImage;
     [SerializeField] private Text levelTitleText;
@@ -29,6 +28,12 @@ public class UIManager : MonoBehaviour {
 
     [Header("Stars")]
     [SerializeField] private Image[] stars;
+
+	[Header("Score")]
+	[SerializeField] private float score;
+	[SerializeField] private Text scoreText;
+	private float startScore;
+	private float endScore;
 
 	// Use this for initialization
 	void Start () {
@@ -52,7 +57,7 @@ public class UIManager : MonoBehaviour {
 
         overlayImage.enabled = true;
         levelTitleText.text = _lmScript.levelName;
-        levelStartUI.Play("MainButtonIn");
+        levelStartUI.Play("MainButtonIn"); 
 
     }
 	
@@ -69,8 +74,18 @@ public class UIManager : MonoBehaviour {
             float percentageComplete = _timeSinceStart / timeTakenDuringLerping;
 
             timerImage.fillAmount = Mathf.Lerp(startPosition, endPosition, percentageComplete);
-            float _timerText = Mathf.Lerp(timerStartPosition, endPosition, percentageComplete);
-            //timerText.text = _timerText.ToString("F0");
+
+			startScore = timerImage.fillAmount;
+		
+			if(startScore <= endScore)
+			{
+				startScore = timerImage.fillAmount;
+				endScore = timerImage.fillAmount -= 0.01F;
+				score += 50;
+				score = Mathf.Round(score);
+				scoreText.text = score.ToString();
+				StartCoroutine(DetermineStarScore());
+			}
 
             if(percentageComplete >= 1.0F)
             {
@@ -83,8 +98,8 @@ public class UIManager : MonoBehaviour {
 				}
 				else
 				{
-					Debug.Log("Game Finished");
-				}                
+					Debug.Log ("Level Fully Finished");
+				}
             }
         }
     }
@@ -101,7 +116,16 @@ public class UIManager : MonoBehaviour {
 
 	public void ShowResults()
 	{
+		scoreText.text = score.ToString();
 		levelStartUI.Play("ResultsIn");
+		StartCoroutine(StartScoreCalculator());
+
+	}
+
+	IEnumerator StartScoreCalculator()
+	{
+		yield return new WaitForSeconds(levelStartUI.GetClip("ResultsIn").length);
+		cbScript.SendTimerToDepelete(0);
 	}
    
 	public void SetTimerToDepelete(Image _depeletingTimer, int timer)
@@ -116,25 +140,28 @@ public class UIManager : MonoBehaviour {
 		timerStartPosition = lmScript.totalTime;
 		endPosition = 0;
 
+		startScore = timerImage.fillAmount;
+		endScore = timerImage.fillAmount - 0.01F;
+
 		timerID++;
 	}
 
     IEnumerator DetermineStarScore()
     {
-        if(timerStartPosition >= lmScript.scoreTiers[0])
+        if(score >= lmScript.scoreTiers[0] * 100)
         {
             stars[0].enabled = true;
-        }
-        yield return new WaitForSeconds(0.5F);
-        if (timerStartPosition >= lmScript.scoreTiers[1])
+        }        
+        if (score >= lmScript.scoreTiers[1] * 100)
         {
             stars[1].enabled = true;
-        }
-        yield return new WaitForSeconds(1F);
-        if (timerStartPosition >= lmScript.scoreTiers[2])
+        }        
+        if (score >= lmScript.scoreTiers[2] * 100)
         {
             stars[2].enabled = true;
         }
+
+		yield return null;
     }
 
    

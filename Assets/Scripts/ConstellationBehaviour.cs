@@ -81,7 +81,8 @@ public class ConstellationBehaviour : MonoBehaviour {
                     }
                     if(lineID == starHolders.Length - 1)
                     {
-						SendTimerToDepelete(0);
+						uiScript.ShowResults();
+						//SendTimerToDepelete(0);
                     }
                 }
             }
