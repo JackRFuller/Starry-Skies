@@ -17,4 +17,10 @@ public class GameManager : MonoBehaviour {
 	{
 		Application.LoadLevel(Application.loadedLevelName);
 	}
+
+	public void LoadLevel(string levelName)
+	{
+		Application.LoadLevel("MainScene");
+		Application.LoadLevelAdditive(levelName);
+	}
 }

@@ -44,14 +44,17 @@ public class UIManager : MonoBehaviour {
 
     public void InitiliaseLevelUI(LevelManager _lmScript)
     {
+
+
         lmScript = _lmScript;
 		cbScript = _lmScript.transform.GetChild(0).GetComponent<ConstellationBehaviour>();
 
         int _starCount = 0;
         foreach(Image star in stars)
-        {            
-            Text _pointsNeeded = star.transform.parent.GetChild(1).GetComponent<Text>();
-            _pointsNeeded.text = (lmScript.scoreTiers[_starCount] * 100).ToString();
+        {     
+			Text _pointsNeeded = star.transform.GetChild(1).GetComponent<Text>();
+
+           	_pointsNeeded.text = (lmScript.scoreTiers[_starCount] * 100).ToString();
             _starCount++;
         }
 
