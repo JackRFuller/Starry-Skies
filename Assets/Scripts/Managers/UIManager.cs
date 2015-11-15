@@ -28,6 +28,8 @@ public class UIManager : MonoBehaviour {
 
     [Header("Stars")]
     [SerializeField] private Image[] stars;
+    [SerializeField] private Image starCounter;   
+    private int starScoreID = 0;
 
 	[Header("Score")]
 	[SerializeField] private float score;
@@ -73,38 +75,84 @@ public class UIManager : MonoBehaviour {
     {
         if (isLerping)
         {
-            float _timeSinceStart = Time.time - timeStartedLerping;
-            float percentageComplete = _timeSinceStart / timeTakenDuringLerping;
+            DepeleteStarHolderTimers();
+        }
+    }
 
-            timerImage.fillAmount = Mathf.Lerp(startPosition, endPosition, percentageComplete);
+    void DepeleteStarHolderTimers()
+    {
+        float _timeSinceStart = Time.time - timeStartedLerping;
+        float percentageComplete = _timeSinceStart / timeTakenDuringLerping;
 
-			startScore = timerImage.fillAmount;
-		
-			if(startScore <= endScore)
-			{
-				startScore = timerImage.fillAmount;
-				endScore = timerImage.fillAmount -= 0.01F;
-				score += 50;
-				score = Mathf.Round(score);
-				scoreText.text = score.ToString();
-				StartCoroutine(DetermineStarScore());
-			}
+        timerImage.fillAmount = Mathf.Lerp(startPosition, endPosition, percentageComplete);
+        
 
-            if(percentageComplete >= 1.0F)
+        startScore = timerImage.fillAmount;
+
+        if (startScore <= endScore)
+        {
+            startScore = timerImage.fillAmount;
+            endScore = timerImage.fillAmount -= 0.01F;
+           
+            score += 50;
+
+            score = Mathf.Round(score);
+            scoreText.text = score.ToString();
+
+            BuildToStar();
+
+            StartCoroutine(DetermineStarScore());
+        }
+
+        if (percentageComplete >= 1.0F)
+        {
+            isLerping = false;
+            timerStartPosition = Mathf.RoundToInt(timerStartPosition);
+
+            if (timerID < numOfTimers)
             {
-                isLerping = false;
-                timerStartPosition = Mathf.RoundToInt(timerStartPosition);
-
-				if(timerID < numOfTimers)
-				{
-					cbScript.SendTimerToDepelete(timerID);
-				}
-				else
-				{
-					Debug.Log ("Level Fully Finished");
-				}
+                cbScript.SendTimerToDepelete(timerID);
+            }
+            else
+            {
+                Debug.Log("Level Fully Finished");
             }
         }
+    }
+
+    void BuildToStar()
+    {
+        if(starScoreID < lmScript.scoreTiers.Length)
+        {
+            starCounter.fillAmount += starFillRate();
+
+            if (starCounter.fillAmount == 1 && starScoreID != 2)
+            {
+                starCounter.fillAmount = 0;
+                starScoreID++;
+            }
+        }
+    }
+
+    float starFillRate()
+    {
+        float _diff = 0;
+
+        if(starScoreID == 0)
+        {
+            _diff = lmScript.scoreTiers[starScoreID];           
+        }
+        else
+        {
+            _diff = (lmScript.scoreTiers[starScoreID] - lmScript.scoreTiers[starScoreID - 1]);
+        }
+
+        _diff *= 100;        
+        _diff = (_diff / 50);
+        _diff = (1 / _diff);
+        Debug.Log(_diff);
+
+        return _diff;
     }
 
     public void StartLevel()
@@ -127,7 +175,8 @@ public class UIManager : MonoBehaviour {
 
 	IEnumerator StartScoreCalculator()
 	{
-		yield return new WaitForSeconds(levelStartUI.GetClip("ResultsIn").length);
+        starCounter.fillAmount = 0;
+        yield return new WaitForSeconds(levelStartUI.GetClip("ResultsIn").length);
 		cbScript.SendTimerToDepelete(0);
 	}
    
@@ -146,9 +195,9 @@ public class UIManager : MonoBehaviour {
 		startScore = timerImage.fillAmount;
 		endScore = timerImage.fillAmount - 0.01F;
 
-		timerID++;
+		timerID++;       
 	}
-
+    
     IEnumerator DetermineStarScore()
     {
         if(score >= lmScript.scoreTiers[0] * 100)

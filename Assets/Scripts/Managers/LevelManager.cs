@@ -12,6 +12,7 @@ public class LevelManager : MonoBehaviour {
         Initialise,
         InProgress,
         Finished,
+        GameOver,
     }
     public levelState currentLevelState = levelState.Initialise;
 
@@ -60,12 +61,11 @@ public class LevelManager : MonoBehaviour {
             star.GetComponent<StarBaseClass>().UnFreezePosition();
         }
     }
-	
-	// Update is called once per frame
-	void Update () {
+    
+    public void GameOver()
+    {
 
-       
-	}
+    }	
 
     public void StarHolderActive()
     {
@@ -88,7 +88,5 @@ public class LevelManager : MonoBehaviour {
                 star.SetActive(false);
             }
         }
-
-        
     }
 }

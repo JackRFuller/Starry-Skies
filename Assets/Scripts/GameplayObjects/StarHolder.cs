@@ -6,10 +6,12 @@ public class StarHolder : MonoBehaviour {
 
     [Header("Manager")]
     [SerializeField] private LevelManager lmScript;
+    private PauseManager pmScript;
 
     [SerializeField] private Animation starAnimations;    
     [SerializeField] private string starName;
     [SerializeField] private Text starNameText;
+    
 
 	[Header("Timer")]
 	[SerializeField] private Image starTimer;
@@ -20,18 +22,27 @@ public class StarHolder : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+
+        InitialValues();
 	
 	}
+
+    void InitialValues()
+    {
+        pmScript = GameObject.Find("PauseManager").GetComponent<PauseManager>();
+    }
 
 
 	// Update is called once per frame
 	void Update () {
 
-		if(lmScript.currentLevelState == LevelManager.levelState.InProgress)
-		{
-			RunTimer();
-		}
-	
+        if(pmScript.currentPauseState == PauseManager.pauseState.playing)
+        {
+            if (lmScript.currentLevelState == LevelManager.levelState.InProgress)
+            {
+                RunTimer();
+            }
+        }
 	}
 
 	void RunTimer()
@@ -45,10 +56,15 @@ public class StarHolder : MonoBehaviour {
 			}
 			else
 			{
-				Debug.Log("Game Over " + gameObject.name);
+                TriggerGameOver();
 			}
 		}
 	}
+
+    void TriggerGameOver()
+    {
+
+    }
 
     void OnTriggerEnter(Collider other)
     {
