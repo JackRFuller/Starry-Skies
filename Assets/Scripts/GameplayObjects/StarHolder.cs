@@ -56,14 +56,18 @@ public class StarHolder : MonoBehaviour {
 			}
 			else
 			{
-                TriggerGameOver();
+				if(lmScript.currentLevelState != LevelManager.levelState.GameOver)
+				{
+					TriggerGameOver();
+				}
+                
 			}
 		}
 	}
 
     void TriggerGameOver()
     {
-
+		lmScript.GameOver("Time");
     }
 
     void OnTriggerEnter(Collider other)

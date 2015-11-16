@@ -197,6 +197,23 @@ public class UIManager : MonoBehaviour {
 
 		timerID++;       
 	}
+
+	public void GameOver(string _Reason)
+	{
+		overlayImage.enabled = true;
+
+		if(_Reason == "Time")
+		{
+			levelTitleText.text = "Out of Time";
+		}
+
+		if(_Reason == "Destory")
+		{
+			levelTitleText.text = "Star Destroyed";
+		}
+
+		levelStartUI.Play("GameOver");
+	}
     
     IEnumerator DetermineStarScore()
     {

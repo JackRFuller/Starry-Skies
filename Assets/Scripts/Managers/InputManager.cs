@@ -28,7 +28,7 @@ public class InputManager : MonoBehaviour {
             if (uiScript.hasStarted)
             {
 
-                Debug.Log("C");
+               
                 if (Input.GetMouseButton(0))
                 {
                     PlayerInput();
@@ -64,13 +64,13 @@ public class InputManager : MonoBehaviour {
 		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 		RaycastHit hit;
 
-        Debug.Log("A");
+        
 
 		if(Physics.Raycast(ray, out hit, Mathf.Infinity))
 		{
 			if(hit.collider.tag == "Terrain")
 			{
-                Debug.Log("B");
+                
 
                 movementDirection = hit.point;
 				touchPoint.enabled = true;

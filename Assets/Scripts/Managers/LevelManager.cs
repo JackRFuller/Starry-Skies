@@ -62,9 +62,10 @@ public class LevelManager : MonoBehaviour {
         }
     }
     
-    public void GameOver()
+    public void GameOver(string _Reason)
     {
-
+		currentLevelState = levelState.GameOver;
+		uiScript.GameOver(_Reason);
     }	
 
     public void StarHolderActive()
