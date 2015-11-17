@@ -27,6 +27,9 @@ public class StarBaseClass : MonoBehaviour {
 	private bool isWrappingWidth;
 	private Vector3 newStarPosition;
 
+	[Header("Particles")]
+	public bool deathByParticle;
+
 	// Use this for initialization
 	void Start () {
 	
@@ -183,5 +186,15 @@ public class StarBaseClass : MonoBehaviour {
 		if(starRenderer.isVisible)
 			return true;
 		return false;
+	}
+
+	void OnParticleCollision()
+	{
+		Debug.Log("hit" + gameObject.name);
+
+		if(deathByParticle)
+		{
+			gameObject.SetActive(false);
+		}
 	}
 }
