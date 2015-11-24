@@ -11,7 +11,7 @@ public class TitleTextBehaviour : MonoBehaviour {
 	[Header("Drawing Line Variables")]
 	[SerializeField] private Transform origin;
 	[SerializeField] private Transform destination;
-	[SerializeField] private float drawSpeed = 1;
+	[SerializeField] private float drawSpeed = 10;
 
 	private LineRenderer currentLR;
 	private float counter;
@@ -62,9 +62,13 @@ public class TitleTextBehaviour : MonoBehaviour {
 				{
 					starLines[lineID].enabled = true;
 				}
+
+                float _dist = Vector3.Distance(_pointAlongline, _pointB);
+                
 				
-				if(_pointAlongline == _pointB)
+				if(_dist < 0.2F)
 				{
+                    currentLR.SetPosition(1, _pointB);
 					drawing = false;
 					if(lineID < starLines.Count - 1)
 					{
